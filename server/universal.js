@@ -30,6 +30,7 @@ module.exports = function universalLoader(req, res) {
       </Provider>
     )
 
+      console.log(markup);
     if (context.url) {
       // Somewhere a `<Redirect>` was rendered
       res.redirect(301, context.url)

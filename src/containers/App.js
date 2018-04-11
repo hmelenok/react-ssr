@@ -1,23 +1,72 @@
-import React, { Component } from 'react'
-import { Switch, Route } from 'react-router-dom'
-import FirstPage from './FirstPage'
-import SecondPage from './SecondPage'
-import NoMatch from '../components/NoMatch'
+import React, {Component,renderToString} from 'react'
+import {Document, Page, setOptions} from 'react-pdf/dist/entry.noworker';
+// import {PdfViewer, setPdfViewerOptions} from '@gemshelf/react-components/lib';
+import {range} from 'lodash';
+
+// setPdfViewerOptions({disableWorker: true});
+setOptions({
+    disableWorker: true
+});
 
 export default class App extends Component {
-  render(){
-    return (
-      <div>
-        <h1>Server Side Rendering with Create React App v2</h1>
-        <p>Hey, so I've rewritten this example with react-router v4</p>
-        <p>This code is on github: <a href='https://github.com/ayroblu/ssr-create-react-app-v2'>https://github.com/ayroblu/ssr-create-react-app-v2</a></p>
-        <p>Medium article: <a href='https://medium.com/@benlu/ssr-with-create-react-app-v2-1b8b520681d9'>https://medium.com/@benlu/ssr-with-create-react-app-v2-1b8b520681d9</a></p>
-        <Switch>
-          <Route exact path="/" component={FirstPage}/>
-          <Route path="/second" component={SecondPage}/>
-          <Route component={NoMatch}/>
-        </Switch>
-      </div>
-    )
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            numPages: null,
+            pageNumber: 1,
+            rotate: 0,
+            manualWidth: null,
+            loadedPages: 0,
+            renderedPages: 0,
+            pageLimit: 5,
+            startPage: 1,
+            allLoaded: false,
+            isFullscreen: false,
+            fileTitle: false,
+            visibleWidth: 0
+        };
+    }
+
+    onDocumentLoad(params) {
+        const {numPages} = params;
+
+        this.setState({
+            numPages,
+        });
+    }
+
+    renderPage(page) {
+        const {loadedPages, renderedPages} = this.state;
+        return (
+            <Page
+                renderMode={'svg'}
+                key={`page_${page}`}
+                pageNumber={page}
+                loading={' '}
+                onLoadSuccess={() => this.setState({loadedPages: loadedPages + 1})}
+                onRenderSuccess={() => this.setState({renderedPages: renderedPages + 1})}
+                renderAnnotations={false}
+            />
+        );
+    }
+    createRangeOfPages(from = 1, to) {
+        return range(from, to + 1).map(page => ({page}));
+    }
+    render() {
+        const {numPages, pageLimit, startPage} = this.state;
+        return (
+            <div>
+                {/*<PdfViewer fileLocation={'/pdf.pdf'} />*/}
+                <Document
+                    file={'http://www.pdf995.com/samples/pdf.pdf'}
+                    onLoadSuccess={params => this.onDocumentLoad(params)}
+                >
+                    {this.createRangeOfPages(startPage, pageLimit > numPages ? numPages : pageLimit).map(
+                        ({page}) => this.renderPage(page)
+                    )}
+                </Document>
+            </div>
+        )
+    }
 }
+

@@ -8,13 +8,17 @@
     "react-scripts": "1.0.6"
   },
   "dependencies": {
+    "@gemshelf/react-components": "^0.4.17",
     "body-parser": "^1.17.1",
     "compression": "^1.6.2",
     "express": "^4.15.2",
+    "global": "^4.3.2",
     "ignore-styles": "^5.0.1",
+    "lodash": "^4.17.5",
     "morgan": "^1.8.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "react-pdf": "^3.0.0-beta",
     "react-redux": "^5.0.4",
     "react-router-dom": "^4.1.1",
     "redux": "^3.6.0"
